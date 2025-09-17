@@ -15,8 +15,8 @@ struct Node {
 
 template<typename T>
 class List {
-    Node<T>* head;
-    Node<T>* tail;
+    Node* head;
+    Node* tail;
     std::size_t sz;
 
     template <typename U>
@@ -32,20 +32,15 @@ public:
     }
 
     List(const List& other) {
-        // Тут прроверку на самого себя
         head = nullptr;
         tail = nullptr;
 
-        for (Node<T>* cur = other.head; cur != nullptr; cur = cur->next) {
+        for (Node* cur = other.head; cur != nullptr; cur = cur->next) {
             continue;
         }
     }
 
-    List(const List&& other) {
-        if (this == &other) {
-            return;
-        }
-
+    List(List&& other) noexcept {
         head(other.head);
         tail(other.tail);
 
@@ -53,13 +48,25 @@ public:
         other.tail = nullptr;
     }
 
-    List<T>& operator=(const List<T>& other) {
-        return other;
+    List& operator=(const List& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        clear();
+
+        Node* current = other.head;
+        while (current != nullptr) {
+            push_back(current->data);
+            current = current->next;
+        }
+
+        return *this;
     }
 
-    List<T>& operator=(List<T>&& other) noexcept {
+    List& operator=(List&& other) noexcept {
         if (this == &other) {
-            return other;
+            return *this;
         }
 
         clear();
@@ -71,6 +78,8 @@ public:
         other.head = nullptr;
         other.tail = nullptr;
         other.sz = 0;
+
+        return *this;
     }
 
     ~List() {
@@ -96,7 +105,7 @@ public:
 template<typename T>
 void List<T>::clear() noexcept {
     while (head) {
-        Node<T>* temp = head;
+        Node* temp = head;
         head = head->next;
         delete temp;
     }
@@ -107,7 +116,7 @@ void List<T>::clear() noexcept {
 
 template<typename T>
 void List<T>::push_back(const T& data) {
-    Node<T>* node = new Node(data);
+    Node* node = new Node(data);
     if (!tail) {
         tail = head = node;
     }
@@ -121,7 +130,7 @@ void List<T>::push_back(const T& data) {
 
 template<typename T>
 void List<T>::push_front(const T& data) {
-    Node<T>* node = new Node(data);
+    Node* node = new Node(data);
     if (!tail) {
         tail = head = node;
     }
@@ -139,7 +148,7 @@ void List<T>::pop_back() {
         return;
     }
 
-    Node<T>* temp = tail;
+    Node* temp = tail;
     tail = tail->prev;
     if (tail) {
         tail->next = nullptr;
@@ -158,7 +167,7 @@ void List<T>::pop_front() {
         return;
     }
 
-    Node<T>* temp = head;
+    Node* temp = head;
     head = head->next;
     if (head) {
         head->prev = nullptr;
@@ -173,7 +182,7 @@ void List<T>::pop_front() {
 
 template<typename T>
 void print(const List<T>& list) {
-    for (Node<T>* node = list.head; node; ) {
+    for (Node* node = list.head; node; ) {
         std::cout << node->value;
         if (node->next) {
             std::cout << ", ";
