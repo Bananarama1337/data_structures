@@ -17,7 +17,7 @@ template<typename T>
 class List {
     Node* head;
     Node* tail;
-    std::size_t sz;
+    std::size_t sz_;
 
     template <typename U>
     friend void print(const List<U>& list);
@@ -48,39 +48,10 @@ public:
         other.tail = nullptr;
     }
 
-    List& operator=(const List& other) {
-        if (this == &other) {
-            return *this;
-        }
-
-        clear();
-
-        Node* current = other.head;
-        while (current != nullptr) {
-            push_back(current->data);
-            current = current->next;
-        }
-
-        return *this;
-    }
-
-    List& operator=(List&& other) noexcept {
-        if (this == &other) {
-            return *this;
-        }
-
-        clear();
-        head = other.head;
-        tail = other.tail;
-
-        sz = other.sz;
-
-        other.head = nullptr;
-        other.tail = nullptr;
-        other.sz = 0;
-
-        return *this;
-    }
+    List& operator=(const List& other);
+    List& operator=(List&& other) noexcept;
+    T& operator[](const std::size_t& index);
+    const T& operator[](const std::size_t& index) const;
 
     ~List() {
         clear();
@@ -91,16 +62,54 @@ public:
     }
 
     std::size_t size() const noexcept {
-        return sz;
+        return sz_;
     }
 
     void clear() noexcept;
     void push_back(const T& data);
     void pop_back();
     void push_front(const T& data);
-    void pop_front();;
-    void insert();
+    void pop_front();
+    void insert(std::size_t index, const T& value);
+    void erase(const std::size_t& index);
 };
+
+template<typename T>
+List<T>& List<T>::operator=(const List& other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    clear();
+
+    Node* current = other.head;
+    while (current != nullptr) {
+        push_back(current->data);
+        current = current->next;
+    }
+
+    return *this;
+}
+
+template<typename T>
+List<T>& List<T>::operator=(List&& other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+
+    clear();
+
+    head = other.head;
+    tail = other.tail;
+
+    sz_ = other.sz_;
+
+    other.head = nullptr;
+    other.tail = nullptr;
+    other.sz_ = 0;
+
+    return *this;
+}
 
 template<typename T>
 void List<T>::clear() noexcept {
@@ -111,7 +120,7 @@ void List<T>::clear() noexcept {
     }
 
     tail = nullptr;
-    sz = 0;
+    sz_ = 0;
 }
 
 template<typename T>
@@ -125,7 +134,7 @@ void List<T>::push_back(const T& data) {
         node->prev = tail;
         tail = node;
     }
-    sz++;
+    sz_++;
 }
 
 template<typename T>
@@ -139,7 +148,61 @@ void List<T>::push_front(const T& data) {
         node->next = head;
         head = node;
     }
-    sz++;
+    sz_++;
+}
+
+template<typename T>
+void List<T>::insert(std::size_t index, const T& value) {
+    if (index >= size()) {
+        return;
+    }
+
+    if (index == 0) {
+        push_front(value);
+        return;
+    }
+    if (index == size) {
+        push_back(value);
+        return;
+    }
+
+    Node* current = head;
+    for (size_t i = 0; i < index; ++i) {
+        current = current->next;
+    }
+
+    Node* new_node = new Node(value);
+    new_node->prev = current->prev;
+    new_node->next = current;
+    current->prev->next = new_node;
+    current->prev = new_node;
+    sz_++;
+}
+
+template<typename T>
+void List<T>::erase(const std::size_t& index) {
+    if (empty() || index >= size()) {
+        throw std::out_of_range("List index out of range");
+    }
+
+    if (index == 0) {
+        pop_front();
+    }
+    if (index == size - 1) {
+        pop_back();
+    }
+
+    Node* current = head;
+    for (std::size_t i = 0; i < index; i++) {
+        current = current->next;
+    }
+
+    current->prev->next = current->next;
+    current->next->prev = current->prev;
+
+    delete current;
+    sz_--;
+
 }
 
 template<typename T>
@@ -158,7 +221,7 @@ void List<T>::pop_back() {
     }
 
     delete temp;
-    sz--;
+    sz_--;
 }
 
 template<typename T>
@@ -177,7 +240,7 @@ void List<T>::pop_front() {
     }
 
     delete temp;
-    sz--;
+    sz_--;
 }
 
 template<typename T>

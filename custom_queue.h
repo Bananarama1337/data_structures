@@ -1,5 +1,5 @@
-#ifndef CUSTOM_QUEUE_
-#define CUSTOM_QUEUE_
+#ifndef CUSTOM_QUEUE_H
+#define CUSTOM_QUEUE_H
 
 #include <iostream>
 #include <stdexcept>
@@ -24,7 +24,7 @@ public:
         first_index_(0),
         last_index_(0)
     {
-        if (init_capacity == 0) {
+        if (init_capacity <= 0) {
             throw std::invalid_argument("Capacity must be greater than 0");
         }
 
@@ -223,4 +223,4 @@ void print(const custom_queue<T>& queue) {
     std::cout << std::endl;
 }
 
-#endif
+#endif  //  CUSTOM_QUEUE_H
