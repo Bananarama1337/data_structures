@@ -22,7 +22,10 @@ class custom_stack {
 
 public:
     custom_stack() : size_(0) {};
-
+    custom_stack(const custom_stack& other);
+    custom_stack(custom_stack&& other);
+    custom_stack& operator=(const custom_stack& other);
+    custom_stack& operator=(custom_stack&& other);
     ~custom_stack() {
         clear();
     }
