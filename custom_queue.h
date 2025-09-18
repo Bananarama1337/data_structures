@@ -18,13 +18,13 @@ class custom_queue {
     friend void print(const custom_queue<U>& queue);
 
 public:
-    custom_queue(std::size_t init_capacity = 10)
-        : capacity_(init_capacity),
-        size_(0),
+    custom_queue(std::size_t init_capacity = 10) 
+        : capacity_(init_capacity), 
+        size_(0), 
         first_index_(0),
         last_index_(0)
     {
-        if (init_capacity <= 0) {
+        if (init_capacity == 0) {
             throw std::invalid_argument("Capacity must be greater than 0");
         }
 
@@ -67,11 +67,11 @@ custom_queue<T>::custom_queue(const custom_queue& other) {
     size_ = other.size_;
     first_index_ = other.first_index_;
     last_index_ = other.last_index_;
-
+        
     T* new_data = new T[capacity_];
 
     for (std::size_t i = 0; i < capacity_; i++) {
-        new_data[i] = other.data_[i];
+        new_data[i] = other.data_[i]; 
     }
 
     data_ = new_data;
@@ -104,10 +104,10 @@ custom_queue<T>& custom_queue<T>::operator=(const custom_queue& other) {
     size_ = other.size_;
     first_index_ = other.first_index_;
     last_index_ = other.last_index_;
-
+        
     data_ = new T[capacity_];
     for (std::size_t i = 0; i < capacity_; i++) {
-        data_[i] = other.data_[i];
+        data_[i] = other.data_[i]; 
     }
 
     return *this;
@@ -172,7 +172,7 @@ T custom_queue<T>::pop() {
         throw std::out_of_range("Queue is empty");
     }
 
-    T return_value = data_[first_index_];
+    T return_value = std::move(data_[first_index_]);
     first_index_ = (first_index_ + 1) % capacity_;
     size_--;
 
