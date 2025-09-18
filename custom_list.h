@@ -15,8 +15,8 @@ struct Node {
 
 template<typename T>
 class List {
-    Node* head;
-    Node* tail;
+    Node<T>* head;
+    Node<T>* tail;
     std::size_t size_;
 
     template <typename U>
@@ -35,7 +35,7 @@ public:
         head = nullptr;
         tail = nullptr;
 
-        for (Node* cur = other.head; cur != nullptr; cur = cur->next) {
+        for (Node<T>* cur = other.head; cur != nullptr; cur = cur->next) {
             continue;
         }
     }
@@ -74,7 +74,7 @@ public:
     void erase(std::size_t index);
 
     T& operator[](std::size_t index);
-    const T& operator[](std::size_t index) const
+    const T& operator[](std::size_t index) const;
 };
 
 template<typename T>
@@ -85,7 +85,7 @@ List<T>& List<T>::operator=(const List& other) {
 
     clear();
 
-    Node* current = other.head;
+    Node<T>* current = other.head;
     while (current != nullptr) {
         push_back(current->data);
         current = current->next;
@@ -117,7 +117,7 @@ List<T>& List<T>::operator=(List&& other) noexcept {
 template<typename T>
 void List<T>::clear() noexcept {
     while (head) {
-        Node* temp = head;
+        Node<T>* temp = head;
         head = head->next;
         delete temp;
     }
@@ -128,7 +128,7 @@ void List<T>::clear() noexcept {
 
 template<typename T>
 void List<T>::push_back(const T& data) {
-    Node* node = new Node(data);
+    Node<T>* node = new Node<T>(data);
     if (!tail) {
         tail = head = node;
     }
@@ -142,7 +142,7 @@ void List<T>::push_back(const T& data) {
 
 template<typename T>
 void List<T>::push_front(const T& data) {
-    Node* node = new Node(data);
+    Node<T>* node = new Node<T>(data);
     if (!tail) {
         tail = head = node;
     }
@@ -169,12 +169,12 @@ void List<T>::insert(std::size_t index, const T& value) {
         return;
     }
 
-    Node* current = head;
+    Node<T>* current = head;
     for (size_t i = 0; i < index; ++i) {
         current = current->next;
     }
 
-    Node* new_node = new Node(value);
+    Node<T>* new_node = new Node<T>(value);
     new_node->prev = current->prev;
     new_node->next = current;
     current->prev->next = new_node;
@@ -195,7 +195,7 @@ void List<T>::erase(std::size_t index) {
         pop_back();
     }
 
-    Node* current = head;
+    Node<T>* current = head;
     for (std::size_t i = 0; i < index; i++) {
         current = current->next;
     }
@@ -214,7 +214,7 @@ void List<T>::pop_back() {
         return;
     }
 
-    Node* temp = tail;
+    Node<T>* temp = tail;
     tail = tail->prev;
     if (tail) {
         tail->next = nullptr;
@@ -233,7 +233,7 @@ void List<T>::pop_front() {
         return;
     }
 
-    Node* temp = head;
+    Node<T>* temp = head;
     head = head->next;
     if (head) {
         head->prev = nullptr;
@@ -248,7 +248,7 @@ void List<T>::pop_front() {
 
 template<typename T>
 void print(const List<T>& list) {
-    for (Node* node = list.head; node; ) {
+    for (Node<T>* node = list.head; node; ) {
         std::cout << node->value;
         if (node->next) {
             std::cout << ", ";
@@ -264,7 +264,7 @@ T& List<T>::operator[](std::size_t index) {
         throw std::out_of_range("Index out of range");
     }
 
-    Node* current = nullptr;
+    Node<T>* current = nullptr;
     if (index > size_ / 2) {
         current = tail;
         for (std::size_t i = size_ - 1; i > index; i--) {
@@ -287,7 +287,7 @@ const T& List<T>::operator[](std::size_t index) const {
         throw std::out_of_range("Index out of range");
     }
 
-    Node* current = nullptr;
+    Node<T>* current = nullptr;
     if (index > size_ / 2) {
         current = tail;
         for (std::size_t i = size_ - 1; i > index; i--) {
