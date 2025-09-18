@@ -34,9 +34,12 @@ public:
     List(const List& other) {
         head = nullptr;
         tail = nullptr;
-
-        for (Node<T>* cur = other.head; cur != nullptr; cur = cur->next) {
-            continue;
+        size_ = 0;
+        
+        Node<T>* current = other.head;
+        while (current != nullptr) {
+            push_back(current->data);
+            current = current->next;
         }
     }
 

@@ -20,12 +20,14 @@ class custom_stack {
     template<typename U>
     friend void print(const custom_stack<U>& stack);
 
+    void deep_copy(const custom_stack& other);
+
 public:
     custom_stack() : size_(0) {};
     custom_stack(const custom_stack& other);
-    custom_stack(custom_stack&& other);
+    custom_stack(custom_stack&& other) noexcept;
     custom_stack& operator=(const custom_stack& other);
-    custom_stack& operator=(custom_stack&& other);
+    custom_stack& operator=(custom_stack&& other) noexcept;
     ~custom_stack() {
         clear();
     }
@@ -44,6 +46,73 @@ public:
     T& top();
     const T& top() const;
 };
+
+template<typename T>
+void custom_stack<T>::deep_copy(const custom_stack& other) {
+    top_ = new ListNode<T>(other.top_->data);
+    ListNode<T>* thisCurrent = top_;
+    ListNode<T>* otherCurrent = other.top_->next;
+
+    while (otherCurrent) {
+        thisCurrent->next = new ListNode<T>(otherCurrent->data);
+        thisCurrent = thisCurrent->next;
+        otherCurrent = otherCurrent->next;
+    }
+}
+
+template<typename T>
+custom_stack<T>::custom_stack(const custom_stack& other) {
+    size_ = other.size_;
+    top_ = nullptr;
+
+    if (!other.top_) return; 
+
+    deep_copy(other);
+}
+
+template<typename T>
+custom_stack<T>::custom_stack(custom_stack&& other) noexcept {
+    size_ = other.size_;
+    top_ = other.top_;
+
+    other.size_ = 0;
+    other.top_ = nullptr;
+}
+
+template<typename T>
+custom_stack<T>& custom_stack<T>::operator=(const custom_stack& other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    clear();
+
+    size_ = other.size_;
+    top_ = nullptr;
+
+    if (!other.top_) return *this;
+
+    deep_copy(other);
+
+    return *this;
+}
+
+template<typename T>
+custom_stack<T>& custom_stack<T>::operator=(custom_stack&& other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+
+    clear();
+
+    size_ = other.size_;
+    top_ = other.top_;
+
+    other.size_ = 0;
+    other.top_ = nullptr;
+
+    return *this;
+}
 
 template<typename T>
 void custom_stack<T>::clear() noexcept {
@@ -100,7 +169,7 @@ const T& custom_stack<T>::top() const {
 
 template<typename T>
 void print(const custom_stack<T>& stack) {
-    std::cout << "Stack (size: " << stack.size_ << "): ";
+    std::cout << "Stack (size: " << stack.size_ << "): top -> ";
 
     ListNode<T>* current = stack.top_;
     while (current) {
