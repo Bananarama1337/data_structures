@@ -17,7 +17,7 @@ template<typename T>
 class List {
     Node* head;
     Node* tail;
-    std::size_t sz_;
+    std::size_t size_;
 
     template <typename U>
     friend void print(const List<U>& list);
@@ -62,7 +62,7 @@ public:
     }
 
     std::size_t size() const noexcept {
-        return sz_;
+        return size_;
     }
 
     void clear() noexcept;
@@ -71,7 +71,10 @@ public:
     void push_front(const T& data);
     void pop_front();
     void insert(std::size_t index, const T& value);
-    void erase(const std::size_t& index);
+    void erase(std::size_t index);
+
+    T& operator[](std::size_t index);
+    const T& operator[](std::size_t index) const
 };
 
 template<typename T>
@@ -102,11 +105,11 @@ List<T>& List<T>::operator=(List&& other) noexcept {
     head = other.head;
     tail = other.tail;
 
-    sz_ = other.sz_;
+    size_ = other.size_;
 
     other.head = nullptr;
     other.tail = nullptr;
-    other.sz_ = 0;
+    other.size_ = 0;
 
     return *this;
 }
@@ -120,7 +123,7 @@ void List<T>::clear() noexcept {
     }
 
     tail = nullptr;
-    sz_ = 0;
+    size_ = 0;
 }
 
 template<typename T>
@@ -134,7 +137,7 @@ void List<T>::push_back(const T& data) {
         node->prev = tail;
         tail = node;
     }
-    sz_++;
+    size_++;
 }
 
 template<typename T>
@@ -148,12 +151,12 @@ void List<T>::push_front(const T& data) {
         node->next = head;
         head = node;
     }
-    sz_++;
+    size_++;
 }
 
 template<typename T>
 void List<T>::insert(std::size_t index, const T& value) {
-    if (index >= size()) {
+    if (index >= size_) {
         return;
     }
 
@@ -176,12 +179,12 @@ void List<T>::insert(std::size_t index, const T& value) {
     new_node->next = current;
     current->prev->next = new_node;
     current->prev = new_node;
-    sz_++;
+    size_++;
 }
 
 template<typename T>
-void List<T>::erase(const std::size_t& index) {
-    if (empty() || index >= size()) {
+void List<T>::erase(std::size_t index) {
+    if (empty() || index >= size_) {
         throw std::out_of_range("List index out of range");
     }
 
@@ -201,7 +204,7 @@ void List<T>::erase(const std::size_t& index) {
     current->next->prev = current->prev;
 
     delete current;
-    sz_--;
+    size_--;
 
 }
 
@@ -221,7 +224,7 @@ void List<T>::pop_back() {
     }
 
     delete temp;
-    sz_--;
+    size_--;
 }
 
 template<typename T>
@@ -240,7 +243,7 @@ void List<T>::pop_front() {
     }
 
     delete temp;
-    sz_--;
+    size_--;
 }
 
 template<typename T>
@@ -253,6 +256,52 @@ void print(const List<T>& list) {
         node = node->next;
     }
     std::cout << std::endl;
+}
+
+template<typename T>
+T& List<T>::operator[](std::size_t index) {
+    if (index >= size_) {
+        throw std::out_of_range("Index out of range");
+    }
+
+    Node* current = nullptr;
+    if (index > size_ / 2) {
+        current = tail;
+        for (std::size_t i = size_ - 1; i > index; i--) {
+            current = current->prev;
+        }
+    }
+    else {
+        current = head;
+        for (std::size_t i = 0; i < index; i++) {
+            current = current->next;
+        }
+    }
+
+    return current->data;
+}
+
+template<typename T>
+const T& List<T>::operator[](std::size_t index) const {
+    if (index >= size_) {
+        throw std::out_of_range("Index out of range");
+    }
+
+    Node* current = nullptr;
+    if (index > size_ / 2) {
+        current = tail;
+        for (std::size_t i = size_ - 1; i > index; i--) {
+            current = current->prev;
+        }
+    }
+    else {
+        current = head;
+        for (std::size_t i = 0; i < index; i++) {
+            current = current->next;
+        }
+    }
+
+    return current->data;
 }
 
 #endif // CUSTOM_LIST_H
