@@ -6,7 +6,7 @@ struct TreeNode {
     TreeNode* right = nullptr;
     T data;
 
-    TreeNode(const T& value = T()) : data(value) {};
+    TreeNode(const T& value) : data(value) {};
 };
 
 template<typename T>
@@ -30,9 +30,10 @@ private:
     friend void print_rec(TreeNode<U>* node, std::size_t depth);
 
 public:
-    binary_tree(const T& value = T()) {
+    binary_tree(const T& value) {
         root_ = new TreeNode<T>(value);
     }
+    binary_tree() : root_(nullptr) {}
 
     binary_tree(const binary_tree& other);
     binary_tree(binary_tree&& other) noexcept;
@@ -82,7 +83,7 @@ binary_tree<T>& binary_tree<T>::operator=(const binary_tree& other) {
     }
 
     clear(root_);
-    root_ = copy_rec();
+    root_ = copy_rec(other.root_);
 
     return *this;
 }

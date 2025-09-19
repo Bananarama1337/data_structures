@@ -10,7 +10,7 @@ struct Node {
     Node* next = nullptr;
     T value;
 
-    Node(const T& data = T()) : value(data) {}
+    Node(const T& data) : value(data) {}
 };
 
 template<typename T>

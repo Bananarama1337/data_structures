@@ -9,7 +9,7 @@ struct ListNode {
     ListNode* next = nullptr;
     T data;
 
-    ListNode(const T& value = T()) : data(value) {};
+    ListNode(const T& value) : data(value) {};
 };
 
 template<typename T>
